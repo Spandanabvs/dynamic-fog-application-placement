@@ -1,0 +1,12 @@
+simpy
+scikit-learn
+joblib
+numpy
+matplotlib
+seaborn
+streamlit==1.32.0
+requests==2.31.0
+fastapi==0.100.0
+uvicorn==0.23.0
+pandas==2.2.2
+plotly==5.15.0
