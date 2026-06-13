@@ -54,7 +54,7 @@ class ResultsCollector:
         df = self.get_dataframe()
         avg_waiting = df['waiting_time'].mean() if 'waiting_time' in df.columns else 0.0
         
-        # Ensure calculated
+                           
         if self.avg_latency == 0: self.calculate_average_latency()
         if self.total_energy == 0: self.calculate_total_energy()
 
@@ -72,20 +72,20 @@ class ResultsCollector:
         
         df = self.get_dataframe()
         
-        # Calculate Deadline Miss Rate
+                                      
         miss_count = 0
         if not df.empty and 'deadline' in df.columns and 'latency' in df.columns:
             miss_count = df[df['latency'] > df['deadline']].shape[0]
         miss_rate = miss_count / len(df) if not df.empty else 0.0
 
-        # Calculate Throughput
+                              
         throughput = 0.0
         if not df.empty and 'completion_time' in df.columns and 'creation_time' in df.columns:
             duration = df['completion_time'].max() - df['creation_time'].min()
             if duration > 0:
                 throughput = len(df) / duration
 
-        # Get Agent Metrics (for HYBRID)
+                                        
         q_size = 0
         epsilon = 0.0
         if scheduler_name == 'HYBRID':

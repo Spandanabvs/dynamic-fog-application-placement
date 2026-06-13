@@ -38,10 +38,10 @@ class IotDevice:
         self.action = env.process(self.run(config.TASK_GENERATION_PERIOD))
 
     def run(self, generation_duration):
-        # Check if this device has a specific configuration (legacy fallback)
+                                                                             
         forced_type_runtime = config.IOT_DEVICE_CONFIG.get(self.device_id)
         
-        # Priority: Constructor Argument > Legacy Dict Config > Random
+                                                                      
         effective_task_type = self.forced_type if self.forced_type else forced_type_runtime
         if effective_task_type == "RANDOM": effective_task_type = None
 

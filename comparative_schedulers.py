@@ -63,7 +63,7 @@ def run_spea2_scheduler(task, fog_nodes, cloud_node):
     for i in range(num_nodes):
         for j in range(num_nodes):
             if i == j: continue
-            if (latencies[j] <= latencies[i] and energies[j] <= energies[i]) and \
+            if (latencies[j] <= latencies[i] and energies[j] <= energies[i]) and\
                (latencies[j] < latencies[i] or energies[j] < energies[i]):
                 dominated_count[i] += 1
                 

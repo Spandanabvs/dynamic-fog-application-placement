@@ -36,12 +36,12 @@ def run_simulation(training_mode=False, benchmark_mode=False):
     results = ResultsCollector();
     print('   [+] Created Results Collector')
 
-    # Load Fog Configuration based on Mode
+                                          
     fog_nodes = []
     
     if config.FOG_NODES_CUSTOM_CONFIG:
         print(f'   [+] Using Custom Fog Node Configuration with {len(config.FOG_NODES_CUSTOM_CONFIG)} nodes.')
-        config.NUM_FOG_NODES = len(config.FOG_NODES_CUSTOM_CONFIG) # Sync global count
+        config.NUM_FOG_NODES = len(config.FOG_NODES_CUSTOM_CONFIG)                    
         
         for node_conf in config.FOG_NODES_CUSTOM_CONFIG:
              node = FogNode(env=env, 
@@ -63,7 +63,7 @@ def run_simulation(training_mode=False, benchmark_mode=False):
                            power_busy=random.uniform(fog_preset["FOG_POWER_BUSY_RANGE"][0], fog_preset["FOG_POWER_BUSY_RANGE"][1]))
             fog_nodes.append(node)
 
-    # Save Fog Node Config to CSV
+                                 
     import csv
     with open('fog_node_config.csv', 'w', newline='') as f:
         writer = csv.writer(f)
@@ -83,7 +83,7 @@ def run_simulation(training_mode=False, benchmark_mode=False):
     
     if config.IOT_DEVICES_CUSTOM_CONFIG:
         print(f'   [+] Using Custom IoT Device Configuration with {len(config.IOT_DEVICES_CUSTOM_CONFIG)} devices.')
-        config.NUM_IOT_DEVICES = len(config.IOT_DEVICES_CUSTOM_CONFIG) # Sync global count
+        config.NUM_IOT_DEVICES = len(config.IOT_DEVICES_CUSTOM_CONFIG)                    
         
         for device_conf in config.IOT_DEVICES_CUSTOM_CONFIG:
             device = IotDevice(env=env, 

@@ -12,7 +12,7 @@ def run_benchmark():
     
     results_file = "benchmark_results.csv"
     
-    # Reset File with Extended Header
+                                     
     with open(results_file, 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['Scheduler', 'AverageLatency', 'TotalEnergy', 'TasksCompleted', 'DeadlineMissRate', 'Throughput', 'QTableSize', 'Epsilon'])
@@ -21,14 +21,14 @@ def run_benchmark():
     config.TRAINING_MODE = False
     config.BENCHMARK_MODE = True
     
-    # Use existing duration if set (e.g. from UI), otherwise default to 1000 for standalone runs
-    if config.TASK_GENERATION_PERIOD == 100: # Default value in config.py
+                                                                                                
+    if config.TASK_GENERATION_PERIOD == 100:                             
         config.TASK_GENERATION_PERIOD = 1000
         print(f"   [i] using default Benchmark Duration: {config.TASK_GENERATION_PERIOD}s")
     else:
         print(f"   [i] using Configured Duration: {config.TASK_GENERATION_PERIOD}s")
 
-    # Detect Custom Configuration
+                                 
     if config.FOG_NODES_CUSTOM_CONFIG:
         print(f"   [!] CUSTOM FOG CONFIG ACTIVE: {len(config.FOG_NODES_CUSTOM_CONFIG)} nodes defined.")
     if config.IOT_DEVICES_CUSTOM_CONFIG:
@@ -37,25 +37,25 @@ def run_benchmark():
     for strategy in strategies:
         print(f"\n>>> Testing Strategy: {strategy}")
         
-        # --- FAIRNESS ENFORCEMENT ---
-        # Reset the seed so every scheduler faces the exact same 
-        # 1. Fog Node Hardware Configuration
-        # 2. Task Arrival Times and Properties
+                                      
+                                                                 
+                                            
+                                              
         random.seed(FIXED_SEED)
         np.random.seed(FIXED_SEED)
         
         config.SCHEDULER_TYPE = strategy
         
-        # Run
+             
         run_simulation(training_mode=False, benchmark_mode=True)
         
-        # Preserve Task Data for detailed plotting
+                                                  
         if os.path.exists("task_data.csv"):
             new_name = f"task_data_{strategy}.csv"
             shutil.copy("task_data.csv", new_name)
             print(f"   [+] Saved detailed task data to {new_name}")
 
-        # Preserve Fog Config for fairness verification
+                                                       
         if os.path.exists("fog_node_config.csv"):
             conf_name = f"fog_node_config_{strategy}.csv"
             shutil.copy("fog_node_config.csv", conf_name)
@@ -63,7 +63,7 @@ def run_benchmark():
         
     print(f"\n--- Benchmark Complete. Results saved to {results_file} ---")
 
-    # --- VERIFICATION STEP ---
+                               
     print("\n--- 🛡️ Verifying Fairness (Hardware Configuration Audit) ---")
     import pandas as pd
     
@@ -93,7 +93,7 @@ def run_benchmark():
             else:
                 print("   ❌ FAILURE: Hardware configurations differed between runs!")
 
-            # --- TASK WORKLOAD VERIFICATION ---
+                                                
             print("\n--- 🛡️ Verifying Fairness (Task Workload Audit) ---")
             task_files = {}
             for strategy in strategies:
@@ -107,17 +107,17 @@ def run_benchmark():
                 base_strategy = strategies[0]
                 base_tasks = task_files[base_strategy]
                 
-                # Columns that define the workload (Input parameters)
+                                                                     
                 workload_cols = ['task_id', 'task_type', 'creation_time', 'task_cpu_required', 'task_data_size_mb', 'deadline']
                 
                 tasks_match = True
                 for strategy in strategies[1:]:
                     compare_tasks = task_files[strategy]
-                    # Compare only the workload columns
+                                                       
                     if not base_tasks[workload_cols].equals(compare_tasks[workload_cols]):
                         tasks_match = False
                         print(f"   [x] MISMATCH DETECTED: {base_strategy} vs {strategy}")
-                        # Show first mismatch for debugging
+                                                           
                         diff = base_tasks[workload_cols].compare(compare_tasks[workload_cols])
                         print(diff.head())
                         break
@@ -134,7 +134,7 @@ def run_benchmark():
     except Exception as e:
         print(f"   [!] Verification failed with error: {e}")
     
-    # Print Table
+                 
     print("\nFINAL RESULTS:")
     with open(results_file, 'r') as f:
         print(f.read())

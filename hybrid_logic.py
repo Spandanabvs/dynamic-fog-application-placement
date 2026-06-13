@@ -3,20 +3,20 @@ from firefly import run_firefly_optimizer
 import numpy as np
 import config
 
-# Define possible actions (Weights for Latency, Energy)
-# Action 0: Prioritize Energy (0.1, 0.9)
-# Action 1: Balanced (0.5, 0.5)
-# Action 2: Prioritize Latency (0.9, 0.1)
+                                                       
+                                        
+                               
+                                         
 ACTIONS = [
     (0.1, 0.9),
     (0.5, 0.5),
     (0.9, 0.1)
 ]
 
-# Initialize Global Agent
+                         
 agent = QLearningAgent(actions=ACTIONS)
 
-# Tracking metrics for State
+                            
 history_window = []
 WINDOW_SIZE = 50
 
@@ -25,26 +25,23 @@ def run_hybrid_logic(task, fog_nodes, cloud_node, current_sim_time):
     
     all_nodes = fog_nodes + [cloud_node]
     
-    # 1. Observe State
+                      
     avg_queue = sum(n.get_queue_length() for n in all_nodes) / len(all_nodes)
     miss_rate = sum(history_window) / len(history_window) if history_window else 0
     
     state = agent.get_state_key(avg_queue, miss_rate)
     
-    # 2. Choose Action (Weights)
-    # Check if we are in training mode (default to False if not set)
+                                
+                                                                    
     is_training = getattr(config, 'TRAINING_MODE', False)
     w_lat, w_eng = agent.choose_action(state, training=is_training)
     
-    # 3. Run Firefly with chosen weights
+                                        
     best_node_index = run_firefly_optimizer(all_nodes, task, w_lat, w_eng)
     best_node = all_nodes[best_node_index]
     
     return best_node, (w_lat, w_eng) 
 
 def update_agent(reward, next_avg_queue, next_miss_rate):
-    """
-    Explicit update function called by the Scheduler.
-    """
     next_state = agent.get_state_key(next_avg_queue, next_miss_rate)
     agent.learn(reward, next_state)

@@ -107,22 +107,22 @@ class Scheduler:
             )
             log_task_completion(self.env.now, task, node, final_latency)
 
-            # RL UPDATE STEP
+                            
             if self.strategy == 'HYBRID':
-                # Reward Calculation
+                                    
                 reward = 0
                 if final_latency <= task.deadline:
                     reward += 10
                     if final_latency < task.deadline * 0.5:
-                        reward += 5 # Bonus for speed
+                        reward += 5                  
                 else:
-                    reward -= 10 # Penalty for missing deadline
+                    reward -= 10                               
                 
-                # Energy Penalty (normalized roughly)
+                                                     
                 reward -= (energy * 0.1)
 
-                # Get Next State info (Simplified)
-                # We update the global history window in hybrid_logic roughly here
+                                                  
+                                                                                  
                 from hybrid_logic import history_window
                 history_window.append(0 if final_latency <= task.deadline else 1)
                 if len(history_window) > 50: history_window.pop(0)

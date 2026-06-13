@@ -5,7 +5,7 @@ import os
 
 class QLearningAgent:
     def __init__(self, actions, learning_rate=0.1, discount_factor=0.9, epsilon=1.0, epsilon_decay=0.995, min_epsilon=0.01):
-        self.actions = actions  # List of possible weight tuples: [(w_lat, w_eng), ...]
+        self.actions = actions                                                         
         self.lr = learning_rate
         self.gamma = discount_factor
         self.epsilon = epsilon
@@ -15,19 +15,16 @@ class QLearningAgent:
         self.last_state = None
         self.last_action_index = None
 
-        # Try to load existing Q-table
+                                      
         self.load_q_table()
 
     def get_state_key(self, avg_queue_length, recent_deadline_miss_rate):
-        """
-        Discretizes continuous metrics into a finite state key.
-        """
-        # Queue State
+                     
         if avg_queue_length < 5: q_state = "LOW_Q"
         elif avg_queue_length < 20: q_state = "MED_Q"
         else: q_state = "HIGH_Q"
 
-        # Deadline State
+                        
         if recent_deadline_miss_rate < 0.05: d_state = "SAFE"
         elif recent_deadline_miss_rate < 0.20: d_state = "RISKY"
         else: d_state = "CRITICAL"
@@ -35,16 +32,13 @@ class QLearningAgent:
         return (q_state, d_state)
 
     def choose_action(self, state, training=True):
-        """
-        Returns the index of the action to take.
-        """
         self.last_state = state
         
-        # Initialize state in Q-table if new
+                                            
         if state not in self.q_table:
             self.q_table[state] = np.zeros(len(self.actions))
 
-        # Epsilon-Greedy Strategy
+                                 
         if training and random.random() < self.epsilon:
             action_index = random.randint(0, len(self.actions) - 1)
         else:
@@ -54,9 +48,6 @@ class QLearningAgent:
         return self.actions[action_index]
 
     def learn(self, reward, next_state):
-        """
-        Updates the Q-Table based on the reward received.
-        """
         if self.last_state is None or self.last_action_index is None:
             return
 
@@ -66,11 +57,11 @@ class QLearningAgent:
         old_value = self.q_table[self.last_state][self.last_action_index]
         next_max = np.max(self.q_table[next_state])
 
-        # Q-Learning Formula
+                            
         new_value = (1 - self.lr) * old_value + self.lr * (reward + self.gamma * next_max)
         self.q_table[self.last_state][self.last_action_index] = new_value
 
-        # Decay Epsilon
+                       
         if self.epsilon > self.min_epsilon:
             self.epsilon *= self.epsilon_decay
 
@@ -78,7 +69,7 @@ class QLearningAgent:
         try:
             with open(filename, "wb") as f:
                 pickle.dump(self.q_table, f)
-            # print("Q-Table saved.") # Commented out to reduce noise
+                                                                     
         except Exception as e:
             print(f"Error saving Q-Table: {e}")
 

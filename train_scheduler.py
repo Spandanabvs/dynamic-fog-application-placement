@@ -5,7 +5,7 @@ import os
 from main import run_simulation
 from hybrid_logic import agent
 
-# Context manager to suppress stdout
+                                    
 class SuppressStdout:
     def __enter__(self):
         self._original_stdout = sys.stdout
@@ -27,15 +27,15 @@ def train_agent(epochs=50):
     for epoch in range(1, epochs + 1):
         epoch_start = time.time()
         
-        # Run Simulation with suppressed output
+                                               
         with SuppressStdout():
             results = run_simulation(training_mode=True)
         
-        # Access agent statistics
+                                 
         q_len = len(agent.q_table)
         epsilon = agent.epsilon
         
-        # Print progress to the real stdout
+                                           
         print(f"[Epoch {epoch}/{epochs}] Latency: {results.avg_latency:.2f}ms | Energy: {results.total_energy:.2f}J | Q-Table: {q_len} | Eps: {epsilon:.4f}")
         
     total_time = time.time() - start_time

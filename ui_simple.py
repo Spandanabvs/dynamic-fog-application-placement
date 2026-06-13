@@ -7,7 +7,7 @@ import time
 import os
 from run_benchmark import run_benchmark
 
-# --- Page Config ---
+                     
 st.set_page_config(
     page_title="Fog-Cloud Simulator",
     layout="wide"
@@ -15,24 +15,24 @@ st.set_page_config(
 
 st.title("Application Placement In Fog Environment")
 
-# Create Tabs
+             
 tab1, tab2 = st.tabs(["Single Simulation", "Benchmark"])
 
-# ==========================================
-# TAB 1: SINGLE SIMULATION
-# ==========================================
+                                            
+                          
+                                            
 with tab1:
-    # --- 1. Configuration Section ---
+                                      
     st.sidebar.header("1. Configuration")
 
-    # Map UI inputs to Config variables
+                                       
     scheduler_type = st.sidebar.selectbox(
         "Scheduler Algorithm",
         ["HYBRID", "ROUND_ROBIN", "RANDOM", "SHORTEST_QUEUE", "SPEA2", "MOCS"],
         index=0
     )
 
-    # Fog Configuration
+                       
     st.sidebar.subheader("Fog Node Configuration")
     fog_config_mode = st.sidebar.selectbox(
         "Fog Node Hardware Profile",
@@ -43,9 +43,9 @@ with tab1:
 
     num_fog = st.sidebar.slider("Number of Fog Nodes to Generate", 2, 20, 10)
     
-    # Initialize session state for fog nodes if not present
+                                                           
     if 'fog_nodes_df' not in st.session_state:
-        # Generate initial default
+                                  
         import random
         preset = config.FOG_CONFIG_PRESETS[fog_config_mode]
         initial_data = []
@@ -73,7 +73,7 @@ with tab1:
             })
         st.session_state['fog_nodes_df'] = pd.DataFrame(new_data)
 
-    # Display Data Editor for Fog Nodes
+                                       
     with st.expander("Advanced Fog Node Configuration", expanded=True):
         st.write("Edit individual properties of Fog Nodes.")
         edited_fog_df = st.data_editor(
@@ -94,13 +94,13 @@ with tab1:
 
     st.sidebar.markdown("---")
     
-    # IoT Device Customization
+                              
     with st.expander("Advanced IoT Device Configuration", expanded=True):
         st.write("Customize Task Type and Generation Rate for each device.")
         
-        # Initialize session state for IoT devices if not present
+                                                                 
         if 'iot_devices_df' not in st.session_state:
-            # Generate initial default
+                                      
             iot_data = []
             for i in range(num_iot):
                 iot_data.append({
@@ -125,22 +125,22 @@ with tab1:
             key="iot_editor_advanced"
         )
 
-    # --- 2. Execution Section ---
+                                  
     if st.sidebar.button("Run Simulation", type="primary"):
         with st.spinner("Running Simulation... Please wait."):
-            # Update Config
+                           
             config.SCHEDULER_TYPE = scheduler_type
             config.NUM_IOT_DEVICES = num_iot
             config.TASK_GENERATION_PERIOD = sim_duration
             config.FOG_CONFIG_MODE = fog_config_mode
             
-            # 1. Parse Fog Config
-            # Convert edited dataframe to list of dicts
+                                 
+                                                       
             fog_custom_list = edited_fog_df.to_dict('records')
-            # Ensure proper types
+                                 
             valid_fog_nodes = []
             for node in fog_custom_list:
-                # Skip empty or incomplete rows if any
+                                                      
                 if pd.isna(node.get('cpu_capacity')) or node.get('cpu_capacity') is None:
                     continue
                 
@@ -148,14 +148,14 @@ with tab1:
                 node['node_id'] = int(node['node_id']) if pd.notna(node.get('node_id')) else 0
                 valid_fog_nodes.append(node)
             
-            # Re-assign node IDs to be safe sequential integers
+                                                               
             for idx, node in enumerate(valid_fog_nodes):
                 node['node_id'] = idx
                 
             config.FOG_NODES_CUSTOM_CONFIG = valid_fog_nodes
             config.NUM_FOG_NODES = len(valid_fog_nodes)
 
-            # 2. Parse IoT Config (New Advanced Method)
+                                                       
             iot_custom_list = edited_iot_df.to_dict('records')
             valid_iot_devices = []
             for device in iot_custom_list:
@@ -165,41 +165,41 @@ with tab1:
                  device['arrival_rate'] = float(device['arrival_rate'])
                  valid_iot_devices.append(device)
             
-             # Re-assign device IDs to be safe sequential integers
+                                                                  
             for idx, device in enumerate(valid_iot_devices):
                 device['device_id'] = idx
             
             config.IOT_DEVICES_CUSTOM_CONFIG = valid_iot_devices
             config.NUM_IOT_DEVICES = len(valid_iot_devices)
             
-            # Clear old map to avoid confusion, though precedence is handled in components.py
+                                                                                             
             config.IOT_DEVICE_CONFIG = {} 
             
-            # Reset Training Mode flags to ensure standard run
+                                                              
             config.TRAINING_MODE = False
             config.BENCHMARK_MODE = False
 
-            # Run Main Simulation
-            # We capture the returned results object, but main also saves to CSV
+                                 
+                                                                                
             results = main.run_simulation()
             
             st.success("Simulation Complete!")
             st.session_state['has_run'] = True
-            time.sleep(0.5) # UI Buffer
+            time.sleep(0.5)            
             st.rerun()
 
-    # --- 3. Results Visualization Section ---
+                                              
     if st.session_state.get('has_run', False):
         st.header("Simulation Results")
         
-        # Load Data
+                   
         try:
             df = pd.read_csv("task_data.csv")
             
-            # Display Configuration Used
+                                        
             st.markdown(f"**Configuration:** `{config.SCHEDULER_TYPE}` | Fog Nodes: `{config.NUM_FOG_NODES}` | IoT Devices: `{config.NUM_IOT_DEVICES}`")
 
-            # View Fog Node Config
+                                  
             with st.expander("View Fog Node Configuration"):
                 try:
                     df_config = pd.read_csv("fog_node_config.csv")
@@ -207,7 +207,7 @@ with tab1:
                 except FileNotFoundError:
                     st.warning("Fog node configuration file not found.")
 
-            # A. Summary Metrics
+                                
             kpi1, kpi2, kpi3, kpi4 = st.columns(4)
             
             avg_latency = df['latency'].mean()
@@ -222,29 +222,29 @@ with tab1:
             
             st.divider()
 
-            # B. Charts
+                       
             c1, c2 = st.columns(2)
             
             with c1:
                 st.subheader("Latency Distribution")
-                # Histogram to show spread of latency
+                                                     
                 fig_hist = px.histogram(df, x="latency", nbins=50, title="Latency Histogram", color_discrete_sequence=['#3498db'])
                 st.plotly_chart(fig_hist, use_container_width=True)
                 
             with c2:
                 st.subheader("Task Assignments (Fog Only)")
-                # Pie chart of which nodes did the work
+                                                       
                 node_counts = df['node_id'].value_counts().reset_index()
                 node_counts.columns = ['Node', 'Tasks']
 
-                # Filter out CloudNode
+                                      
                 node_counts = node_counts[~node_counts['Node'].astype(str).str.contains("Cloud", case=False)]
 
                 fig_pie = px.pie(node_counts, values='Tasks', names='Node', title="Tasks per Fog Node")
                 st.plotly_chart(fig_pie, use_container_width=True)
 
             st.subheader("Timeline Analysis")
-            # Scatter plot to show latency over time (Did it get worse?)
+                                                                        
             fig_scatter = px.scatter(
                 df, 
                 x="completion_time", 
@@ -255,9 +255,9 @@ with tab1:
             )
             st.plotly_chart(fig_scatter, use_container_width=True)
 
-            # C. Raw Data
+                         
             with st.expander("View Raw Data (task_data.csv) - Fog Only"):
-                # Filter to show only Fog nodes
+                                               
                 df_fog = df[~df['node_id'].astype(str).str.contains("Cloud", case=False)]
                 st.dataframe(df_fog)
 
@@ -266,9 +266,9 @@ with tab1:
     else:
         st.info("Adjust configuration in the sidebar and click **Run Simulation** to start.")
 
-# ==========================================
-# TAB 2: BENCHMARK SUITE
-# ==========================================
+                                            
+                        
+                                            
 with tab2:
     st.header("Benchmark Comparison")
     
@@ -276,12 +276,12 @@ with tab2:
         with st.status("Running Benchmark Suite...", expanded=True) as status:
             st.write("Initializing Benchmark Protocol...")
             
-            # --- SYNC CONFIGURATION FROM UI ---
-            # We must apply the settings from the sidebar/editors to the config module
-            # so the benchmark sees the current custom setup.
+                                                
+                                                                                      
+                                                             
             config.TASK_GENERATION_PERIOD = sim_duration
             
-            # 1. Parse Fog Config (Hardened)
+                                            
             fog_custom_list = edited_fog_df.to_dict('records')
             valid_fog_nodes = []
             for node in fog_custom_list:
@@ -294,7 +294,7 @@ with tab2:
             config.FOG_NODES_CUSTOM_CONFIG = valid_fog_nodes
             config.NUM_FOG_NODES = len(valid_fog_nodes)
 
-            # 2. Parse IoT Config (Hardened)
+                                            
             iot_custom_list = edited_iot_df.to_dict('records')
             valid_iot_devices = []
             for device in iot_custom_list:
@@ -308,8 +308,8 @@ with tab2:
             config.NUM_IOT_DEVICES = len(valid_iot_devices)
             config.IOT_DEVICE_CONFIG = {} 
 
-            # We import and run the logic directly. 
-            # Note: capturing stdout is hard in streamlit, so we trust the function and just show results.
+                                                    
+                                                                                                          
             try:
                 run_benchmark()
                 status.update(label="Benchmark Complete!", state="complete", expanded=False)
@@ -325,7 +325,7 @@ with tab2:
         try:
             bench_df = pd.read_csv("benchmark_results.csv")
             
-            # Highlight Best Performers
+                                       
             st.dataframe(bench_df.style.highlight_max(axis=0, subset=['TasksCompleted', 'Throughput'], color='#2ecc71')
                                      .highlight_min(axis=0, subset=['AverageLatency', 'TotalEnergy', 'DeadlineMissRate'], color='#2ecc71'))
             
